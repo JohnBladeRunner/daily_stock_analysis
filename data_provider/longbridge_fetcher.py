@@ -4,12 +4,12 @@
 LongbridgeFetcher - 长桥证券数据源
 ===================================
 
-数据来源：Longbridge OpenAPI（长桥证券）
+数据来源：Longport OpenAPI（长桥证券）
 特点：支持港股、美股、A股、期权等
 优点：数据质量高、接口稳定、支持实时行情
 
 流控策略：
-1. 使用 Longbridge SDK 内置的流控机制
+1. 使用 Longport SDK 内置的流控机制
 2. 实现指数退避重试
 3. 支持异步请求模式
 
@@ -140,8 +140,8 @@ class LongbridgeFetcher(BaseFetcher):
             return
         
         try:
-            import longbridge
-            from longbridge.openapi import Config, QuoteContext
+            import longport
+            from longport.openapi import Config, QuoteContext
             
             # 获取配置参数
             app_key = config.longbridge_app_key
@@ -177,7 +177,7 @@ class LongbridgeFetcher(BaseFetcher):
             self._test_connection()
             
         except ImportError:
-            logger.warning("未安装 longbridge 库，请运行: pip install longbridge")
+            logger.warning("未安装 longport 库，请运行: pip install longport")
         except Exception as e:
             logger.error(f"Longbridge SDK 初始化失败: {e}")
             self._config = None
@@ -191,7 +191,7 @@ class LongbridgeFetcher(BaseFetcher):
         """
         try:
             # 尝试获取港股市场状态
-            from longbridge.openapi import QuoteContext
+            from longport.openapi import QuoteContext
             quote_ctx = QuoteContext(self._config)
             market_status = quote_ctx.trading_session()
             
@@ -296,8 +296,8 @@ class LongbridgeFetcher(BaseFetcher):
         logger.info(f"[Longbridge] 获取 {lb_code} 历史数据: {start_date} ~ {end_date}")
         
         try:
-            import longbridge
-            from longbridge.openapi import QuoteContext, Period, AdjustType
+            import longport
+            from longport.openapi import QuoteContext, Period, AdjustType
             
             # 创建 QuoteContext
             quote_ctx = QuoteContext(self._config)
@@ -419,8 +419,8 @@ class LongbridgeFetcher(BaseFetcher):
             return None
         
         try:
-            import longbridge
-            from longbridge.openapi import QuoteContext
+            import longport
+            from longport.openapi import QuoteContext
             
             # 转换代码格式
             lb_code = self._convert_stock_code(stock_code)
