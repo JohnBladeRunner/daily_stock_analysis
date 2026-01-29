@@ -269,11 +269,13 @@ class DataFetcherManager:
           3. BaostockFetcher (Priority 3)
           4. YfinanceFetcher (Priority 4)
         """
+        from .longbridge_fetcher import LongbridgeFetcher
         from .efinance_fetcher import EfinanceFetcher
         from .akshare_fetcher import AkshareFetcher
         from .tushare_fetcher import TushareFetcher
         from .baostock_fetcher import BaostockFetcher
         from .yfinance_fetcher import YfinanceFetcher
+        from .longbridge_fetcher import LongbridgeFetcher
         from src.config import get_config
 
         config = get_config()
@@ -284,6 +286,7 @@ class DataFetcherManager:
         tushare = TushareFetcher()  # 会根据 Token 配置自动调整优先级
         baostock = BaostockFetcher()
         yfinance = YfinanceFetcher()
+        longbridge = LongbridgeFetcher()
 
         # 初始化数据源列表
         self._fetchers = [
@@ -292,6 +295,7 @@ class DataFetcherManager:
             tushare,
             baostock,
             yfinance,
+            longbridge,
         ]
 
         # 按优先级排序（Tushare 如果配置了 Token 且初始化成功，优先级为 0）

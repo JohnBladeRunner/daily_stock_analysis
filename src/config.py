@@ -39,6 +39,11 @@ class Config:
     # === 数据源 API Token ===
     tushare_token: Optional[str] = None
     
+    # === Longbridge 配置 ===
+    longbridge_app_key: Optional[str] = None
+    longbridge_app_secret: Optional[str] = None
+    longbridge_access_token: Optional[str] = None
+    
     # === AI 分析配置 ===
     gemini_api_key: Optional[str] = None
     gemini_model: str = "gemini-3-flash-preview"  # 主模型
@@ -132,7 +137,7 @@ class Config:
     # 筹码分布开关（该接口不稳定，云端部署建议关闭）
     enable_chip_distribution: bool = True
     # 实时行情数据源优先级（逗号分隔）
-    realtime_source_priority: str = "akshare_sina,tencent,efinance,akshare_em"
+    realtime_source_priority: str = "akshare_sina,tencent,longbridge,efinance,akshare_em"
     # 实时行情缓存时间（秒）
     realtime_cache_ttl: int = 600
     # 熔断器冷却时间（秒）
@@ -290,6 +295,9 @@ class Config:
             feishu_app_secret=os.getenv('FEISHU_APP_SECRET'),
             feishu_folder_token=os.getenv('FEISHU_FOLDER_TOKEN'),
             tushare_token=os.getenv('TUSHARE_TOKEN'),
+            longbridge_app_key=os.getenv('LONGBRIDGE_APP_KEY'),
+            longbridge_app_secret=os.getenv('LONGBRIDGE_APP_SECRET'),
+            longbridge_access_token=os.getenv('LONGBRIDGE_ACCESS_TOKEN'),
             gemini_api_key=os.getenv('GEMINI_API_KEY'),
             gemini_model=os.getenv('GEMINI_MODEL', 'gemini-3-flash-preview'),
             gemini_model_fallback=os.getenv('GEMINI_MODEL_FALLBACK', 'gemini-2.5-flash'),
@@ -365,8 +373,9 @@ class Config:
             enable_chip_distribution=os.getenv('ENABLE_CHIP_DISTRIBUTION', 'true').lower() == 'true',
             # 实时行情数据源优先级：
             # - akshare_sina/tencent: 单股票直连查询，轻量级，推荐放前面
+            # - longbridge: 长桥证券数据源，支持港股、美股、A股
             # - efinance/akshare_em: 全量拉取，数据丰富但负载大
-            realtime_source_priority=os.getenv('REALTIME_SOURCE_PRIORITY', 'akshare_sina,tencent,efinance,akshare_em'),
+            realtime_source_priority=os.getenv('REALTIME_SOURCE_PRIORITY', 'akshare_sina,tencent,longbridge,efinance,akshare_em'),
             realtime_cache_ttl=int(os.getenv('REALTIME_CACHE_TTL', '600')),
             circuit_breaker_cooldown=int(os.getenv('CIRCUIT_BREAKER_COOLDOWN', '300'))
         )
@@ -427,7 +436,8 @@ class Config:
         
         if not self.bocha_api_keys and not self.tavily_api_keys and not self.serpapi_keys:
             warnings.append("提示：未配置搜索引擎 API Key (Bocha/Tavily/SerpAPI)，新闻搜索功能将不可用")
-        
+        if not self.longbridge_app_key and not self.longbridge_app_secret and not self.longbridge_access_token:
+            warnings.append("提示：未配置长桥 API KEY，功能将不可用")
         # 检查通知配置
         has_notification = (
             self.wechat_webhook_url or
